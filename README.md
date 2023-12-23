@@ -1,5 +1,9 @@
-# Team7-Lee-Li-Slobodchikov-Sui
-Quests repository for Team 7!
+# EC444: Smart and Connected Systems (Fall 2023)
+Team:
+- Jason Li ([jas-li](https://github.com/jas-li))
+- Jake Lee ([jaketlee07](https://github.com/jaketlee07))
+- JiaLin Sui ([gimmymansui](https://github.com/gimmymansui))
+- Maxim Slobodchikov ([maximslo](https://github.com/maximslo))
 
 1. Carmin Watch Project
 Key Features: Real-time display, activity tracking, step and temperature reporting, data plotting, alert function with buzzer.
