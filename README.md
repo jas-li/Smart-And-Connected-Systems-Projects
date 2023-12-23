@@ -1,5 +1,5 @@
 # EC444: Smart and Connected Systems (Fall 2023)
-Team:
+<strong>Team:</strong>
 - Jason Li ([jas-li](https://github.com/jas-li))
 - Jake Lee ([jaketlee07](https://github.com/jaketlee07))
 - JiaLin Sui ([gimmymansui](https://github.com/gimmymansui))
