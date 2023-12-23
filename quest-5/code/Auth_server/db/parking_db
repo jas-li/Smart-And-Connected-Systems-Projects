@@ -1,0 +1,6 @@
+{"k":"0000000078","o":"0000000100","v":"001"}
+{"_id":2,"_uid":2,"_dt":1701915085618,"_s":"1ab2e2e01e15e7650a344504ef39e3ab"}
+{"meterID":0,"fobID":999,"meterStatus":false,"timestamp":1701915085542,"_id":{"$wrap":"$oid","v":2}}
+{"k":"0000000078","o":"0000000100","v":"001"}
+{"_id":3,"_uid":3,"_dt":1701915085619,"_s":"7eb014f4f725603e7cc87e211bdbe768"}
+{"meterID":1,"fobID":999,"meterStatus":false,"timestamp":1701915085542,"_id":{"$wrap":"$oid","v":3}}

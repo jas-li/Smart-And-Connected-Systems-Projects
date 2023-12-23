@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buggy Control</title>
+<style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      padding: 50px;
+    }
+  
+    h1 {
+      color: #333;
+    }
+  
+    button {
+      background-color: #008CBA; /* Blue */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  
+    button:hover {
+      background-color: #005f73;
+    }
+  
+    .button-container {
+      margin-top: 20px;
+    }
+    .live-indicator {
+    height: 20px;
+    width: 20px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background 0.6s;
+  }
+
+  .live-indicator.on {
+    background-color: #4CAF50; /* Green */
+  }
+
+  .image-container {
+    margin: 20px 0;
+  }
+  .image-container img {
+    width: 70%;
+    max-width: 250px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 10, 0.3)); /* Horizontal offset, vertical offset, blur radius, and color */
+    border-radius: 4px; /* Optional: if you want rounded corners */
+    margin-bottom: 20px; /* Optional: if you want space between the image and the controls */
+  }
+  </style>
+</head>
+<body>
+<h1>Buggy Control Panel</h1>
+<div class="live-indicator" id="liveIndicator"></div> <span>Status</span>
+
+<div class="image-container">
+    <img src="buggy.png" alt="Buggy Image">
+</div>
+
+<button id="start-btn">Start</button>
+<button id="stop-btn">Stop</button>
+<button id="turn-btn">180</button>
+
+<script>
+document.getElementById('start-btn').addEventListener('click', function() {
+    sendCommand('start');
+});
+
+document.getElementById('stop-btn').addEventListener('click', function() {
+    sendCommand('stop');
+});
+
+document.getElementById('turn-btn').addEventListener('click', function() {
+    sendCommand('turn');
+});
+
+function sendCommand(command) {
+    fetch('/control', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ command: command }),
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch((error) => console.error('Error:', error));
+}
+
+function setLiveIndicatorOn() {
+  document.getElementById('liveIndicator').classList.add('on');
+}
+
+function setLiveIndicatorOff() {
+  document.getElementById('liveIndicator').classList.remove('on');
+}
+</script>
+</body>
+</html>

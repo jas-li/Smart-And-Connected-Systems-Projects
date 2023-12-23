@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Existing head content -->
+  <meta charset="UTF-8">
+  <title>Parking Lot</title>
+  <style>
+    /* Basic CSS styles for the parking lot */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Georgia', serif; /* Change font for the main text */
+    }
+    h1 {
+      margin-top: 20px; /* Adjust top margin as needed */
+    }
+    .parking-lot {
+      display: flex;
+      flex-wrap: wrap; /* Allow wrapping of items */
+      justify-content: center; /* Center items horizontally */
+      gap: 50px; /* Increase gap between parking spots to 40px */
+      margin: 20px auto;
+      max-width: 2000px; /* Set a max-width for the parking lot */
+    }
+    .parking-spot {
+      position: relative; /* Set the parking-spot div to be a relative container */
+      width: 300px;
+      height: 600px;
+      border: 2px solid #000;
+      background-color: rgb(74, 204, 62);
+      display: flex;
+      flex-direction: column; /* Stack children vertically */
+      justify-content: space-between; /* Distribute children evenly */
+      align-items: center; /* Center children horizontally */
+      border-radius: 10px; /* Rounded corners */
+      overflow: hidden; /* Hide overflow content */
+      padding: 20px; /* Add padding */
+      font-size: 24px;
+      font-family: 'Georgia', serif;
+    }
+    .parking-spot span {
+      align-self: flex-start;
+    }
+    .placeholder-text {
+      align-self: flex-start;
+    }
+    .locked, .unlocked {
+      max-width: 50%; /* Example for a responsive width */
+      max-height: 50%; /* Example for a responsive height */
+      display: none; /* Initially hide images */
+      margin: 0 auto; /* Center the image horizontally */
+    }
+  </style>
+</head>
+<body>
+  <h1>Parking Lot</h1>
+  <div class="parking-lot">
+    <!-- Assign IDs to parking spots -->
+    <div class="parking-spot" id="spot-0">
+      <span>Meter 0</span>
+      <img src="lock.png" class="lock-status locked" alt="Locked Padlock">
+      <img src="open-padlock.png" class="lock-status unlocked" alt="Unlocked Padlock" style="display: none;">
+      <div class="placeholder-text">Placeholder Text</div>
+    </div>
+    <!-- Repeat for other meters -->
+  </div>
+
+  <script>
+    function updateParkingStatus() {
+      fetch('/parking-status')
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          const takenSpots = data.filter(item => item.meterStatus === 1).map(item => item.meterID);
+
+          for (let i = 0; i < 2; i++) { // Adjust the number as per your total spots
+            const spotElement = document.getElementById(`spot-${i}`);
+            if (spotElement) {
+              // Update color based on status
+              
+              spotElement.style.backgroundColor = data[i].meterStatus ? 'rgb(245,72,72)' : 'rgb(130,223,171)'; // Red if taken (true), green if empty (false)
+              // Find the placeholder text div and update its text
+              const placeholderTextDiv = spotElement.querySelector('.placeholder-text');
+              if (placeholderTextDiv) {
+                placeholderTextDiv.textContent = data[i].meterStatus ? 'Spot Taken' : 'Spot Available';
+              }
+
+              // padlock
+              const lockedPadlock = spotElement.querySelector('.locked');
+              const unlockedPadlock = spotElement.querySelector('.unlocked');
+
+              // Update padlock images visibility based on status
+              if (data[i].meterStatus) {
+                lockedPadlock.style.display = 'block';
+                unlockedPadlock.style.display = 'none';
+              } else {
+                lockedPadlock.style.display = 'none';
+                unlockedPadlock.style.display = 'block';
+              }
+            }
+          }
+        })
+        .catch(error => console.error('Error fetching parking status:', error));
+    }
+
+    // Update on page load and every 30 seconds
+    updateParkingStatus();
+    setInterval(updateParkingStatus, 200);
+  </script>
+</body>
+</html>

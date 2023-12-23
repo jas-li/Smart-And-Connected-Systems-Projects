@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        #gridContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* This will create a 2-column grid */
+            gap: 30px; /* This will create gaps between grid items */
+            margin: 30px auto; /* Margins for the entire grid. Adjust 'auto' if you want to center the grid */
+            width: calc(80vw + 30px); /* Adding width to accommodate two 70vw charts + margin */
+        }
+    
+        #chartContainerStepsComparison {
+            height: 600px;
+            width: 70vw;
+            margin-bottom: 20px;
+        }
+        #chartContainerSteps, #chartContainerTemp, #chartContainerSteps1, #chartContainerTemp1 {
+            height: 500px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+    window.onload = function () {
+
+        var dpsSteps = []; // dataPoints for Steps
+        var dpsTemp = []; // dataPoints for Temperature
+
+        var dpsSteps1 = [];
+        var dpsTemp1 = [];
+
+        var totalSteps0 = 0;
+        var totalSteps1 = 0;
+
+        var chartStepsComparison = new CanvasJS.Chart("chartContainerStepsComparison", {
+            title: {
+                text: "Comparison of Total Steps",
+                fontFamily: "Poppins",
+                fontWeight: "Bold",
+                fontSize: 40
+            },
+            axisY: {
+                minimum: 0,
+                title: "Total Steps",
+                fontFamily: "Poppins",
+            },
+            data: [{
+                type: "bar",
+                dataPoints: [
+                    { label: "Carmin 00", y: totalSteps0 },
+                    { label: "Carmin 01", y: totalSteps1 }
+                ]
+            }]
+        });
+
+        function updateBarChart() {
+            chartStepsComparison.options.data[0].dataPoints[0].y = totalSteps0;
+            chartStepsComparison.options.data[0].dataPoints[1].y = totalSteps1;
+            chartStepsComparison.render();
+        }
+                
+        var chartSteps1 = new CanvasJS.Chart("chartContainerSteps1", {
+            title: {
+                text: "Steps over Time (Carmin 01)",
+                fontFamily: "Poppins",
+                fontWeight: "Bold",
+                fontSize: 20
+            },
+            axisY: {
+                title: "Steps",
+                fontFamily: "Poppins",
+            },
+            axisX: {
+                title: "Time HH:mm:ss",
+                fontFamily: "Poppins",
+                valueFormatString: "HH:mm:ss",
+                labelAngle: -50
+            },
+            data: [{
+                type: "line",
+                xValueType: "dateTime",
+                dataPoints: dpsSteps1
+            }]
+        });
+
+        var chartTemp1 = new CanvasJS.Chart("chartContainerTemp1", {
+            title: {
+                text: "Temperature over Time (Carmin 01) ",
+                fontFamily: "Poppins",
+                fontWeight: "Bold",
+                fontSize: 20
+            },
+            axisY: {
+                title: "Temperature (°C)", // Adjust as needed
+                fontFamily: "Poppins",
+                
+            },
+            axisX: {
+                title: "Time",
+                fontFamily: "Poppins",
+                valueFormatString: "HH:mm:ss",
+                labelAngle: -50
+            },
+            data: [{
+                type: "line",
+                xValueType: "dateTime",
+                dataPoints: dpsTemp1
+            }]
+        });
+        
+        var chartSteps = new CanvasJS.Chart("chartContainerSteps", {
+            title: {
+                text: "Steps over Time (Carmin 00)",
+                fontFamily: "Poppins",
+                fontWeight: "Bold",
+                fontSize: 20
+            },
+            axisY: {
+                title: "Steps",
+                fontFamily: "Poppins",
+            },
+            axisX: {
+                title: "Time HH:mm:ss",
+                fontFamily: "Poppins",
+                valueFormatString: "HH:mm:ss",
+                labelAngle: -50
+            },
+            data: [{
+                type: "line",
+                xValueType: "dateTime",
+                dataPoints: dpsSteps
+            }]
+        });
+
+        var chartTemp = new CanvasJS.Chart("chartContainerTemp", {
+            title: {
+                text: "Temperature over Time (Carmin 00)",
+                fontFamily: "Poppins",
+                fontWeight: "Bold",
+                fontSize: 20
+            },
+            axisY: {
+                title: "Temperature (°C)", // Adjust as needed
+                fontFamily: "Poppins",
+                
+            },
+            axisX: {
+                title: "Time",
+                fontFamily: "Poppins",
+                valueFormatString: "HH:mm:ss",
+                labelAngle: -50
+            },
+            data: [{
+                type: "line",
+                xValueType: "dateTime",
+                dataPoints: dpsTemp
+            }]
+        });
+
+        const socket = io();
+        socket.on('largestStepsFile', function(fileName) {
+            document.getElementById("largestStepsTitle").textContent = `File with the largest number of steps is: ${fileName}`;
+        });
+        socket.on('data0', function(data) {
+            dpsSteps1.push({
+                x: new Date(data.x),
+                y: data.y
+            });
+
+            dpsTemp1.push({
+                x: new Date(data.x),
+                y: data.temp
+            });
+
+            if (dpsSteps.length > 20) {
+                dpsSteps.shift();
+            }
+
+            if (dpsTemp.length > 20) {
+                dpsTemp.shift();
+            }
+
+            totalSteps0 = data.totalSteps;
+
+            chartSteps.title.set("text", `Steps over Time (${data.name})`);
+            chartTemp.title.set("text", `Temperature over Time (${data.name})`);
+
+            chartStepsComparison.options.data[0].dataPoints[0].label = data.name;
+
+            chartSteps.render();
+            chartTemp.render();
+            
+            updateBarChart();
+        });
+
+        socket.on('data1', function(data) {
+            dpsSteps.push({
+                x: new Date(data.x),
+                y: data.y
+            });
+
+            dpsTemp.push({
+                x: new Date(data.x),
+                y: data.temp
+            });
+
+            if (dpsSteps.length > 20) {
+                dpsSteps.shift();
+            }
+
+            if (dpsTemp.length > 20) {
+                dpsTemp.shift();
+            }
+            
+            totalSteps1 = data.totalSteps;
+
+            chartSteps1.title.set("text", `Steps over Time (${data.name})`);
+            chartTemp1.title.set("text", `Temperature over Time (${data.name})`);
+
+            chartStepsComparison.options.data[0].dataPoints[1].label = data.name;
+
+            chartSteps1.render();
+            chartTemp1.render();
+
+            updateBarChart();
+        }); 
+
+    }
+    </script>
+</head>
+<body>
+    <h2 id="largestStepsTitle">Loading...</h2>
+    <div id="chartContainerStepsComparison"></div> <!-- New Container for comparison chart -->
+    <div id="gridContainer">
+        <div id="chartContainerSteps1"></div> <!-- New Container for Steps 1 chart -->
+        <div id="chartContainerSteps"></div> 
+        <div id="chartContainerTemp1"></div> <!-- New Container for Temp 1 chart -->
+        <div id="chartContainerTemp"></div>
+    </div>
+
+</body>
+</html>

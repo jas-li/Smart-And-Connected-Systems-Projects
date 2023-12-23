@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "locale": "c",
+        "ratio": "c",
+        "complex": "c"
+    }
+}

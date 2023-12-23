@@ -1,0 +1,3 @@
+{"k":"0000000078","o":"0000000125","v":"001"}
+{"_id":2,"_uid":2,"_dt":1701915085617,"_s":"c6323d270359e7c24999f5e8ac0a0808"}
+{"meterID":0,"fobID":999,"status":"init","timestamp":1701915085542,"ipAddress":"test.test.test","_id":{"$wrap":"$oid","v":2}}

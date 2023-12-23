@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        #chartContainerSteps, #chartContainerTemp {
+            height: 500px;
+            width: 70vw;
+            margin: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+    window.onload = function () {
+
+        var dpsSteps = []; // dataPoints for Steps
+        var dpsTemp = []; // dataPoints for Temperature
+
+        var chartSteps = new CanvasJS.Chart("chartContainerSteps", {
+            title: {
+                text: "Steps over Time",
+                fontFamily: "Poppins",
+                fontWeight: "Bold",
+                fontSize: 40
+            },
+            axisY: {
+                title: "Steps",
+                fontFamily: "Poppins",
+            },
+            axisX: {
+                title: "Time HH:mm:ss",
+                fontFamily: "Poppins",
+                valueFormatString: "HH:mm:ss",
+                labelAngle: -50
+            },
+            data: [{
+                type: "line",
+                xValueType: "dateTime",
+                dataPoints: dpsSteps
+            }]
+        });
+
+        var chartTemp = new CanvasJS.Chart("chartContainerTemp", {
+            title: {
+                text: "Temperature over Time",
+                fontFamily: "Poppins",
+                fontWeight: "Bold",
+                fontSize: 40
+            },
+            axisY: {
+                title: "Temperature (°C)", // Adjust as needed
+                fontFamily: "Poppins",
+
+            },
+            axisX: {
+                title: "Time",
+                fontFamily: "Poppins",
+                valueFormatString: "HH:mm:ss",
+                labelAngle: -50
+            },
+            data: [{
+                type: "line",
+                xValueType: "dateTime",
+                dataPoints: dpsTemp
+            }]
+        });
+
+        const socket = io.connect('http://localhost:3000');
+        socket.on('data', function(data) {
+            dpsSteps.push({
+                x: new Date(data.x),
+                y: data.y
+            });
+
+            dpsTemp.push({
+                x: new Date(data.x),
+                y: data.temp
+            });
+
+            if (dpsSteps.length > 20) {
+                dpsSteps.shift();
+            }
+
+            if (dpsTemp.length > 20) {
+                dpsTemp.shift();
+            }
+
+            chartSteps.render();
+            chartTemp.render();
+        });
+
+    socket.on('refresh', function() {
+        location.reload();  // This reloads the page on the client-side
+    });
+}
+    </script>
+</head>
+<body>
+    <div id="chartContainerSteps"></div>
+    <div id="chartContainerTemp"></div>
+</body>
+</html>
